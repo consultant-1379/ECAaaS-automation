@@ -1,0 +1,63 @@
+---
+- name: HealthCheck on Controllers Nodes
+  hosts: cics
+  tasks:
+   - name: CRM Complete Validation of Resources
+     shell: source openrc && crm_mon -s
+     args:
+      executable: /bin/bash
+     register: status_crm
+   - name: Display CRM CLUSTER Online Status and Resources configured
+     debug:
+      var: status_crm.stdout_lines
+   - name: Check CRM clone sets for all services status
+     shell: source openrc && crm_mon -1 -rf|grep -A2 -i "Clone Set"
+     args:
+      executable: /bin/bash
+     register: status_servicesall
+   - name: Display CRM services status
+     debug:
+       var: status_servicesall.stdout_lines
+   - name: Check RABBITMQ server status
+     shell: source openrc && crm resource status master_p_rabbitmq-server
+     args:
+      executable: /bin/bash
+     register: status_rabbitmq
+   - name: Display RABBITMQ Server Status
+     debug:
+       var: status_rabbitmq.stdout_lines
+   - name: Check Failed Summary
+     shell: source openrc && crm_mon -1 -rf|grep -A2 -i "Failed Actions"
+     args:
+      executable: /bin/bash
+     register: status_failedservices
+   - name: Display services that are failed or with errors
+     debug:
+       var: status_failedservices.stdout_lines
+   - name: Check the list of CRM services in Failed status
+     shell: source openrc && crm_mon -1 -rf | grep -i "FAILED"
+     args:
+       executable: /bin/bash
+     register: failed_crmstatus
+   - name: Display Failed CRM Services Status
+     debug:
+      msg: "There are NO FAILED CRM SERVICES now"
+     when: failed_crmstatus.stderr == ""
+   - name: Check the STOPPED CRM services
+     shell: source openrc && crm_mon -1 -rf | grep -i "Stopped"
+     args:
+      executable: /bin/bash
+     register: stopped_crmstatus
+     ignore_errors: yes
+   - name: Display STOPPED CRM services
+     debug:
+      msg: "There are NO STOPPED CRM SERVICES now"
+     when: stopped_crmstatus.stderr == ""
+   - name: Check the Complete list of CRM service status
+     shell: source openrc && crm_mon -1 -rf
+     args:
+      executable: /bin/bash
+     register: status_crm
+   - name: Display Complete CRM services status
+     debug:
+      var: status_crm.stdout_lines

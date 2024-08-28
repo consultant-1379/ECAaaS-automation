@@ -1,0 +1,44 @@
+---
+- name: Perform HealthCheck validation on Compute Nodes from Fuel
+  hosts: computes
+  tasks:
+   - name: Display NODE Status
+     debug:
+      var: node_status.stdout_lines
+   - name: To Check the uptime on all the hosts
+     shell: uptime
+     when: inventory_hostname in groups['all_nodes']
+     register: time_status
+   - name: To Display uptime status of all nodes
+     debug:
+      var: time_status.stdout_lines
+   - name: To Check processing Cycles
+     shell: ovs-appctl dpif-netdev/pmd-stats-show
+     register: process_cycles
+   - name: To display Process Cycles results
+     debug:
+      var: process_cycles.stdout_lines
+   - name: To Check Packet Drops
+     shell: ovs-appctl dpctl/show -s netdev@ovs-netdev
+     register: packet_drop
+   - name: To display Packet Drop status results
+     debug:
+      var: packet_drop.stdout_lines
+   - name: To view last few lines of cssinit logs
+     shell: tail -100 /var/log/openvswitch/css-init.log
+     register: cssinit_log
+   - name: To display last 100 lines from css_init logs
+     debug:
+      var: cssinit_log.stdout_lines
+   - name: To view last few lines of ovsdb server logs
+     shell: tail -100 /var/log/openvswitch/ovsdb-server.log
+     register: ovsdb_server
+   - name: To display last 100 lines from ovsdb server logs
+     debug:
+      var: ovsdb_server.stdout_lines
+   - name: To view last few lines of ovs vswitchd logs
+     shell: tail -100 /var/log/openvswitch/ovs-vswitchd.log
+     register: ovsvswitchd_logs
+   - name: To display last 100 lines from ovsdb server logs
+     debug:
+      var: ovsvswitchd_logs.stdout_lines

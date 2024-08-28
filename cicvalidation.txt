@@ -1,0 +1,180 @@
+---
+- name: HealthCheck Validation perfomed on all CICs
+  hosts: cics
+  tasks:
+   - name: Check the ACtive-Alarms using WATCHMEN CLient
+     shell: "source openrc && watchmen-client active-alarm-list"
+     args:
+      executable: /bin/bash
+     register: activealarm_status
+   - name: Display Active_Alarms
+     debug:
+      var: activealarm_status.stdout_lines
+   - name: Get the list of all VMs 
+     shell: "source openrc && nova list --all-tenant"
+     args:
+      executable: /bin/bash
+     register: allvms_status
+   - name: Display All VMs details
+     debug:
+      var: allvms_status.stdout_lines
+   - name: Get the list of VMs in SHUTOFF Status
+     shell: "source openrc && nova list --all-tenant|grep -i shut"
+     args:
+      executable: /bin/bash
+     register: vmshut_status
+   - name: Display All VMs details
+     debug:
+      var: vmshut_status.stdout_lines
+   - name: Get the List of Hypervisors and its status
+     shell: "source openrc && nova hypervisor-list"
+     args:
+      executable: /bin/bash
+     register: hypervisor_status
+   - name: Display the list and status of all Hypervisor
+     debug:
+      var: hypervisor_status.stdout_lines
+   - name: Get the List of openstack images
+     shell: "source openrc && glance image-list"
+     args:
+      executable: /bin/bash
+     register: glanceimage_status
+   - name: Display the list of all openstack images
+     debug:
+      var: glanceimage_status.stdout_lines
+   - name: Get the List of NOVA services
+     shell: "source openrc && nova service-list"
+     args:
+      executable: /bin/bash
+     register: novaservices_status
+   - name: Display the list and status of all NOVA Services
+     debug:
+      var: novaservices_status.stdout_lines
+   - name: Get the List of AVAILABILITY ZONES
+     shell: "source openrc && nova availability-zone-list"
+     args:
+      executable: /bin/bash
+     register: zone_status
+   - name: Display the Available Zones
+     debug:
+      var: zone_status.stdout_lines
+   - name: Get the List of NOVA Hosts
+     shell: "source openrc && nova host-list"
+     args:
+      executable: /bin/bash
+     register: novahost_status
+   - name: Display the list and status of all NOVA HOSTS
+     debug:
+      var: novahost_status.stdout_lines
+   - name: Get the List of Available NOVA FLAVORS
+     shell: "source openrc && nova flavor-list"
+     args:
+      executable: /bin/bash
+     register: novaflavor_status
+   - name: Display the list and status of all NOVA Flavors
+     debug:
+      var: novaflavor_status.stdout_lines
+   - name: Get the List of Available TENANTS
+     shell: "source openrc && openstack project list"
+     args:
+      executable: /bin/bash
+     register: project_list
+   - name: Display the list of TENANTS
+     debug:
+      var: project_list.stdout_lines
+   - name: Get the List of Available Openstack hosts List
+     shell: "source openrc && openstack host list"
+     args:
+      executable: /bin/bash
+     register: hostlist_status
+   - name: Display the list and Openstack HOSTS LIST
+     debug:
+      var: hostlist_status.stdout_lines
+   - name: Get the List of CINDER Services
+     shell: "source openrc && cinder service-list"
+     args:
+      executable: /bin/bash
+     register: cinder_status
+   - name: Display the list of all Cinder Services
+     debug:
+      var: cinder_status.stdout_lines
+   - name: Get the list of Available Networks
+     shell: "source openrc && neutron net-list"
+     args:
+      executable: /bin/bash
+     register: neutronnet_status
+   - name: Display the List of Available Openstack Networks
+     debug:
+      var: neutronnet_status.stdout_lines
+   - name: Get the List of NEUTRON PORTs
+     shell: "source openrc && neutron port-list"
+     args:
+      executable: /bin/bash
+     register: neutronport_status
+   - name: Display the list of Available Neutron Ports
+     debug:
+      var: neutronport_status.stdout_lines
+   - name: Get the Ceilometer Statistics
+     shell: "source openrc && ceilometer meter-list"
+     args:
+      executable: /bin/bash
+     register: ceilometer_status
+   - name: Display the list and status of all Hypervisor
+     debug:
+      var: ceilometer_status.stdout_lines
+   - name: Check the HAPROXY IP details
+     shell: "source openrc && ip netns exec haproxy ifconfig"
+     args:
+      executable: /bin/bash
+     register: haproxyip_status
+   - name: Display HAPROXYIP Status
+     debug:
+      var: haproxyip_status.stdout_lines
+   - name: Check the HAPROXY IP ADDRESS details
+     shell: "source openrc && ip netns exec haproxy ip a"
+     args:
+      executable: /bin/bash
+     register: haproxyipaddr_status
+   - name: Display HAPROXYIP Status
+     debug:
+      var: haproxyipaddr_status.stdout_lines
+   - name: Check the HAPROXY ROUTE details
+     shell: "source openrc && ip netns exec haproxy route -nv"
+     args:
+      executable: /bin/bash
+     register: haproxyroute_status
+   - name: Display HAPROXY ROUTE Status
+     debug:
+      var: haproxyroute_status.stdout_lines
+   - name: Check the VROUTER IP details
+     shell: "source openrc && ip netns exec vrouter ifconfig"
+     args:
+      executable: /bin/bash
+     register: vrouterip_status
+   - name: Display VROUTERIP Status
+     debug:
+      var: vrouterip_status.stdout_lines
+   - name: Check the VROUTER IP ADDRESS details
+     shell: "source openrc && ip netns exec vrouter ip a"
+     args:
+      executable: /bin/bash
+     register: vrouteripaddr_status
+   - name: Display VROUTERIP Status
+     debug:
+      var: vrouteripaddr_status.stdout_lines
+   - name: Check the VROUTER ROUTE details
+     shell: "source openrc && ip netns exec vrouter route -nv"
+     args:
+      executable: /bin/bash
+     register: vrouterroute_status
+   - name: Display VROUTER ROUTE Status
+     debug:
+      var: vrouterroute_status.stdout_lines
+   - name: Check the UMM Status
+     shell: source openrc && umm status
+     args:
+      executable: /bin/bash
+     register: status_umm
+   - name: Display the UMM status
+     debug:
+      var: status_umm.stdout_lines
